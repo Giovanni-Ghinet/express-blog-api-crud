@@ -6,16 +6,16 @@ const router = express.Router();
 // Rotta per l'indice (Index) - GET /posts
 router.get('/', index);
 
-// Rotta per il dettaglio (Show) - GET /posts/:id
-router.get('/:id', show);
+// Rotta per il dettaglio (Show) - GET /posts/:slug
+router.get('/:slug', show);
 
 // Rotta per la creazione (Create) - POST /posts
 router.post('/', create);
 
-// Rotta per l'aggiornamento (Update) - PUT /posts/:id
-router.put('/:id', update);
+// Rotta per l'aggiornamento (Update) - PUT /posts/:slug
+router.put('/:slug', update);
 
-// Rotta per la cancellazione (Delete) - DELETE /posts/:id
-router.delete('/:id', destroy);
+// Rotta per la cancellazione (Delete) - DELETE /posts/:slug
+router.delete('/:slug', destroy);
 
 export default router;

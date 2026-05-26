@@ -20,14 +20,10 @@ function index(request, response) {
 }
 
 function update(request, response) {
-    return 
-}
+    const { slug } = request.params;
+    const { title, content, image, tags } = request.body;
 
-function destroy(request, response) {
-    const { id } = request.params;
-    const realId = parseInt(id);
-
-    const postIndex = posts.findIndex(post => post.id === realId);
+    const postIndex = posts.findIndex(post => post.slug === slug);
 
     if (postIndex === -1) {
         return response.status(404).json({
@@ -36,7 +32,44 @@ function destroy(request, response) {
         });
     }
 
-    // Rimuovo il post dall'array
+    
+    if (!title || typeof title !== 'string' || !content || typeof content !== 'string' || !Array.isArray(tags)) {
+        return response.status(400).json({
+            error: 'Dati non validi: title, content e tags (array) sono obbligatori.',
+            results: null
+        });
+    }
+
+    
+    const newSlug = title.toLowerCase().replaceAll(' ', '-').replace(/[^\w-]+/g, '');
+
+    const updatedPost = { 
+        ...posts[postIndex], 
+        title, 
+        content, 
+        image, 
+        tags, 
+        slug: newSlug 
+    };
+    posts[postIndex] = updatedPost;
+
+    console.log('Post aggiornato con successo:', updatedPost);
+    response.json(updatedPost);
+}
+
+function destroy(request, response) {
+    const { slug } = request.params;
+
+    const postIndex = posts.findIndex(post => post.slug === slug);
+
+    if (postIndex === -1) {
+        return response.status(404).json({
+            error: 'Post non trovato',
+            results: null
+        });
+    }
+
+    
     posts.splice(postIndex, 1);
 
     console.log('Post rimosso con successo. Elenco attuale:', posts);
@@ -44,36 +77,14 @@ function destroy(request, response) {
 }
 
 function show(request, response) {
-    const { id } = request.params;
+    const { slug } = request.params;
 
-    const realId = Number(id.trim());
+    const postFound = posts.find(post => post.slug === slug);
 
-    if (isNaN(realId)) {
+    if (!postFound) {
         response.status(404)
             .json({
-                error: 'Parametro "id" non corretto',
-                results: null
-            });
-        return;
-    }
-
-    if (realId <= 0) {
-        response.status(404)
-            .json({
-                error: 'Parametro "id" negativo o zero (CORREGGI)',
-                results: null,
-            });
-        return;
-    }
-
-    const postFound = posts.find(post => {
-        return post.id === realId
-    });
-
-    if (postFound === undefined) {
-        response.status(404)
-            .json({
-                error: 'Post non trovato',
+                error: 'Post non trovato tramite slug',
                 results: null,
             });
         return;
@@ -87,9 +98,33 @@ function show(request, response) {
 }
 
 function create(request, response) {
-    response.json({
-        messaggio: 'Richiesta di creazione'
-    })
+    console.log('Dati in arrivo nel body:', request.body);
+    const { title, content, image, tags } = request.body;
+
+    
+    if (!title || typeof title !== 'string' || !content || typeof content !== 'string' || !Array.isArray(tags)) {
+        return response.status(400).json({
+            error: 'Dati non validi: title (string), content (string) e tags (array) sono obbligatori.',
+            results: null
+        });
+    }
+
+    
+    const newId = posts.length > 0 ? posts[posts.length - 1].id + 1 : 1;
+    const slug = title.toLowerCase().replaceAll(' ', '-').replace(/[^\w-]+/g, '');
+
+    const newPost = {
+        id: newId,
+        slug,
+        title,
+        content,
+        image: image || '/imgs/posts/placeholder.jpeg',
+        tags
+    };
+
+    posts.push(newPost);
+
+    response.status(201).json(newPost);
 }
 
 export {
