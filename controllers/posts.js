@@ -33,14 +33,6 @@ function update(request, response) {
     }
 
     
-    if (!title || typeof title !== 'string' || !content || typeof content !== 'string' || !Array.isArray(tags)) {
-        return response.status(400).json({
-            error: 'Dati non validi: title, content e tags (array) sono obbligatori.',
-            results: null
-        });
-    }
-
-    
     const newSlug = title.toLowerCase().replaceAll(' ', '-').replace(/[^\w-]+/g, '');
 
     const updatedPost = { 
@@ -100,14 +92,6 @@ function show(request, response) {
 function create(request, response) {
     console.log('Dati in arrivo nel body:', request.body);
     const { title, content, image, tags } = request.body;
-
-    
-    if (!title || typeof title !== 'string' || !content || typeof content !== 'string' || !Array.isArray(tags)) {
-        return response.status(400).json({
-            error: 'Dati non validi: title (string), content (string) e tags (array) sono obbligatori.',
-            results: null
-        });
-    }
 
     
     const newId = posts.length > 0 ? posts[posts.length - 1].id + 1 : 1;

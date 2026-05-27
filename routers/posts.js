@@ -1,5 +1,6 @@
 import express from 'express';
 import { index, show, create, update, destroy } from '../controllers/posts.js';
+import validatePost from '../middlewares/validatePost.js';
 
 const router = express.Router();
 
@@ -10,10 +11,10 @@ router.get('/', index);
 router.get('/:slug', show);
 
 // Rotta per la creazione (Create) - POST /posts
-router.post('/', create);
+router.post('/', validatePost, create);
 
 // Rotta per l'aggiornamento (Update) - PUT /posts/:slug
-router.put('/:slug', update);
+router.put('/:slug', validatePost, update);
 
 // Rotta per la cancellazione (Delete) - DELETE /posts/:slug
 router.delete('/:slug', destroy);
